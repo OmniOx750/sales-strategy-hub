@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MEKICS Marketing Strategy CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --text:#192238;--muted:#778197;--line:rgba(69,79,112,.10);
+  --primary:#3973f6;--primary-soft:#eaf1ff;--purple:#8069e8;--pink:#db91b7;
+  --green:#16a34a;--green-soft:#e7f7ee;--amber:#d97706;--amber-soft:#fff4e0;--red:#e0475b;--red-soft:#fdecef;
+  --glass:rgba(255,255,255,.52);--glass-strong:rgba(255,255,255,.74);
+  --shadow:0 18px 48px rgba(54,49,85,.07),inset 0 1px 0 rgba(255,255,255,.5);
+  --r-lg:24px;--r-md:16px;--r-sm:11px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#f8f6fb}
+body{font-family:"Noto Sans KR",-apple-system,"Segoe UI",sans-serif;color:var(--text);font-size:14px;line-height:1.55;min-height:100vh;
+  background:
+    radial-gradient(ellipse 60% 52% at -4% -7%,rgba(255,185,214,.62),transparent 66%),
+    radial-gradient(ellipse 58% 48% at 103% 3%,rgba(211,198,255,.62),transparent 65%),
+    radial-gradient(ellipse 55% 44% at 53% 17%,rgba(196,229,255,.45),transparent 68%),
+    radial-gradient(ellipse 48% 40% at 90% 77%,rgba(232,211,255,.32),transparent 70%),
+    linear-gradient(150deg,#fff9fc 0%,#f8f4ff 44%,#f1f8fc 100%);background-attachment:fixed}
+.num,.kpi-value,.big{font-family:Inter,"Noto Sans KR",sans-serif;font-variant-numeric:tabular-nums}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:13px}
+
+/* layout */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;padding:22px 16px;display:flex;flex-direction:column;gap:6px;
+  background:rgba(255,255,255,.42);border-right:1px solid rgba(255,255,255,.62);backdrop-filter:blur(34px) saturate(1.24);-webkit-backdrop-filter:blur(34px) saturate(1.24)}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 8px 20px}
+.brand-mark{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;color:#fff;font-weight:800;font-family:Inter;font-size:15px;
+  background:linear-gradient(145deg,#3973f6,#8069e8 62%,#db91b7);box-shadow:0 11px 28px rgba(77,91,180,.22)}
+.brand b{display:block;font-size:15px;letter-spacing:-.2px}
+.brand small{color:var(--muted);font-size:11.5px}
+.nav-label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.6px;padding:14px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;color:#4a5469;font-weight:600;border:1px solid transparent;background:none;text-align:left;width:100%;font-size:13.5px;transition:.18s}
+.nav-item:hover{background:rgba(255,255,255,.4);border-color:rgba(255,255,255,.5)}
+.nav-item.active{background:rgba(255,255,255,.72);color:var(--primary);border-color:rgba(255,255,255,.75);box-shadow:0 8px 22px rgba(54,49,85,.065)}
+.nav-item .ico{width:22px;text-align:center;font-size:15px}
+.nav-item .tag{margin-left:auto;font-size:10.5px;background:var(--primary-soft);color:var(--primary);padding:1px 7px;border-radius:20px}
+.side-foot{margin-top:auto;padding:14px;border-radius:16px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.7);font-size:12px;color:var(--muted)}
+.side-foot b{color:var(--text);display:block;margin-bottom:3px}
+.main{padding:24px 30px 60px;min-width:0}
+.topbar{position:sticky;top:12px;z-index:20;display:flex;align-items:center;gap:14px;padding:12px 18px;margin-bottom:22px;border-radius:20px;
+  background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.7);box-shadow:0 16px 44px rgba(54,49,85,.055);backdrop-filter:blur(34px);-webkit-backdrop-filter:blur(34px)}
+.topbar h1{font-size:19px;letter-spacing:-.4px}
+.topbar .sub{color:var(--muted);font-size:12.5px}
+.topbar .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.sample{font-size:11px;font-weight:700;color:var(--amber);background:var(--amber-soft);padding:4px 10px;border-radius:20px}
+.btn{border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.7);padding:8px 14px;border-radius:11px;font-weight:600;font-size:12.5px;color:#34405a;transition:.15s}
+.btn:hover{background:#fff}
+.btn.primary{background:linear-gradient(135deg,#3973f6,#6a6cf0);color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(57,115,246,.25)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.view{display:none;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* cards */
+.card{background:var(--glass);border:1px solid rgba(255,255,255,.72);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:20px 22px;backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px)}
+.card h3{font-size:15px;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+.card .card-sub{color:var(--muted);font-size:12px;margin-top:2px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+.g-73{grid-template-columns:1.55fr 1fr}
+.mt{margin-top:16px}
+.kpi{padding:18px 20px}
+.kpi-label{color:var(--muted);font-size:12px;font-weight:600}
+.kpi-value{font-size:27px;font-weight:800;letter-spacing:-.8px;margin-top:4px}
+.kpi-value small{font-size:13px;color:var(--muted);font-weight:600;margin-left:3px}
+.kpi-foot{font-size:12px;margin-top:6px;color:var(--muted)}
+.up{color:var(--green);font-weight:700}.down{color:var(--red);font-weight:700}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.p-blue{background:var(--primary-soft);color:var(--primary)}.p-green{background:var(--green-soft);color:var(--green)}
+.p-amber{background:var(--amber-soft);color:var(--amber)}.p-red{background:var(--red-soft);color:var(--red)}
+.p-purple{background:#f1edff;color:var(--purple)}.p-gray{background:#eef0f4;color:#5f6880}
+.bar{height:8px;border-radius:10px;background:rgba(69,79,112,.08);overflow:hidden;position:relative}
+.bar>i{position:absolute;inset:0 auto 0 0;border-radius:10px;background:linear-gradient(90deg,#3973f6,#8069e8)}
+.bar.green>i{background:linear-gradient(90deg,#22c55e,#16a34a)}.bar.amber>i{background:linear-gradient(90deg,#fbbf24,#d97706)}.bar.red>i{background:linear-gradient(90deg,#fb7185,#e0475b)}
+
+table{width:100%;border-collapse:collapse}
+th{font-size:11.5px;color:var(--muted);font-weight:700;text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+tr.click{cursor:pointer;transition:.12s}tr.click:hover td{background:rgba(255,255,255,.55)}
+.flag{font-size:18px;margin-right:6px}
+.muted{color:var(--muted)}
+.stage-dots{display:flex;gap:4px}
+.stage-dots i{width:22px;height:6px;border-radius:6px;background:rgba(69,79,112,.12)}
+.stage-dots i.on{background:linear-gradient(90deg,#3973f6,#8069e8)}
+
+/* country view */
+.country-layout{display:grid;grid-template-columns:250px 1fr;gap:16px;align-items:start}
+.c-list{padding:10px;position:sticky;top:96px}
+.c-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;cursor:pointer;border:1px solid transparent}
+.c-item:hover{background:rgba(255,255,255,.5)}
+.c-item.active{background:#fff;border-color:rgba(57,115,246,.2);box-shadow:0 6px 18px rgba(57,115,246,.10)}
+.c-item .flag{font-size:22px;margin:0}
+.c-item b{font-size:13.5px;display:block}
+.c-item small{color:var(--muted);font-size:11.5px}
+.c-item .rate{margin-left:auto;font-family:Inter;font-weight:800;font-size:13px}
+.hero{display:flex;align-items:center;gap:18px;padding:22px 24px}
+.hero .flag{font-size:44px;margin:0}
+.hero h2{font-size:23px;letter-spacing:-.5px}
+.hero .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.hero .hero-kpis{margin-left:auto;display:flex;gap:26px;text-align:right}
+.hero-kpis div span{display:block;font-size:11.5px;color:var(--muted);font-weight:600}
+.hero-kpis div b{font-family:Inter;font-size:21px;font-weight:800}
+.tabs{display:flex;gap:6px;margin:16px 0;flex-wrap:wrap}
+.tab{border:1px solid rgba(255,255,255,.75);background:rgba(255,255,255,.45);padding:9px 15px;border-radius:12px;font-weight:700;font-size:13px;color:#5a6479}
+.tab .n{font-family:Inter;color:var(--muted);margin-right:5px}
+.tab.active{background:#fff;color:var(--primary);box-shadow:0 8px 20px rgba(57,115,246,.12)}
+.tab.active .n{color:var(--primary)}
+.panel{display:none}.panel.active{display:block;animation:fade .2s}
+.env-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.env{padding:16px;border-radius:var(--r-md);background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.8)}
+.env .k{font-size:11.5px;font-weight:700;color:var(--purple);letter-spacing:.3px}
+.env .v{font-weight:700;margin:4px 0 4px;font-size:14px}
+.env p{font-size:12.5px;color:#5a6479}
+.flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:14px}
+.flow b{color:var(--text);background:rgba(255,255,255,.7);padding:4px 10px;border-radius:9px}
+.flow .arr{color:#b3b9c8}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;position:relative}
+.step{padding:18px;border-radius:var(--r-md);background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);position:relative}
+.step.now{background:#fff;border-color:rgba(57,115,246,.35);box-shadow:0 12px 28px rgba(57,115,246,.12)}
+.step .s-no{font-family:Inter;font-weight:800;font-size:12px;color:var(--primary)}
+.step h4{font-size:15px;margin:2px 0 6px}
+.step ul{padding-left:16px;font-size:12.5px;color:#4a5469}
+.step ul li{margin:3px 0}
+.step .when{font-size:11.5px;color:var(--muted);margin-top:8px}
+.approach{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.approach .env .v{font-size:13.5px}
+.funnel{display:flex;flex-direction:column;gap:8px}
+.f-row{display:grid;grid-template-columns:70px 1fr 50px;align-items:center;gap:10px;font-size:12.5px}
+.f-row .fb{height:26px;border-radius:9px;background:linear-gradient(90deg,#3973f6,#8069e8);display:flex;align-items:center;padding-left:10px;color:#fff;font-weight:700;font-size:12px;font-family:Inter}
+.effort{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.effort .env{text-align:center}
+.effort .big{font-size:24px;font-weight:800}
+.ring{display:flex;align-items:center;gap:18px}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* product view */
+.prod-tabs{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.prod-tab{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8);text-align:left;min-width:210px}
+.prod-tab .pi{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:18px;background:linear-gradient(145deg,#eaf1ff,#f1edff)}
+.prod-tab b{display:block;font-size:14px}.prod-tab small{color:var(--muted);font-size:11.5px}
+.prod-tab.active{background:#fff;box-shadow:0 10px 26px rgba(57,115,246,.13);border-color:rgba(57,115,246,.25)}
+.lifecycle{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.lc-col{border-radius:var(--r-lg);padding:16px;background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.75);min-height:200px}
+.lc-col.cur{background:rgba(255,255,255,.72);box-shadow:0 14px 34px rgba(57,115,246,.10);border-color:rgba(57,115,246,.25)}
+.lc-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.lc-head .no{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;font-family:Inter;font-weight:800;font-size:12px;color:#fff;background:linear-gradient(145deg,#3973f6,#8069e8)}
+.lc-head b{font-size:15px}
+.lc-head .pill{margin-left:auto}
+.lc-card{background:#fff;border-radius:13px;padding:12px 13px;margin-bottom:9px;border:1px solid var(--line);box-shadow:0 4px 12px rgba(54,49,85,.04)}
+.lc-card .t{font-weight:700;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.lc-card p{font-size:12px;color:#5f6880;margin-top:4px}
+.lc-card .files{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.file{font-size:11px;padding:3px 8px;border-radius:7px;background:#f4f6fa;color:#4a5469;font-weight:600}
+.cmp td:first-child{font-weight:700;color:#4a5469;width:150px}
+.cmp th.us,.cmp td.us{background:rgba(57,115,246,.06)}
+.cmp th.us{color:var(--primary)}
+.win{color:var(--green);font-weight:800}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.doc{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:15px;background:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.85)}
+.doc .di{width:40px;height:46px;border-radius:9px;display:grid;place-items:center;font-size:10.5px;font-weight:800;color:#fff;flex-shrink:0;font-family:Inter}
+.doc b{font-size:13px;display:block}
+.doc small{color:var(--muted);font-size:11.5px}
+
+/* partners & activity */
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.toolbar select,.toolbar input{padding:8px 11px;border-radius:10px;border:1px solid rgba(69,79,112,.14);background:rgba(255,255,255,.8);outline:none}
+.toolbar input{min-width:220px}
+.chip{border:1px solid rgba(69,79,112,.12);background:rgba(255,255,255,.65);padding:6px 12px;border-radius:20px;font-weight:600;font-size:12px;color:#4a5469}
+.chip.active{background:var(--text);color:#fff;border-color:var(--text)}
+.timeline{position:relative;padding-left:26px}
+.timeline:before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(#c9d6ff,#e8dcff)}
+.tl{position:relative;margin-bottom:12px}
+.tl .dot{position:absolute;left:-26px;top:16px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:10px;background:#fff;border:2px solid #c9d6ff}
+.tl .card{padding:14px 18px}
+.tl .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tl .row .date{margin-left:auto;font-family:Inter;color:var(--muted);font-size:12px;font-weight:600}
+.tl p{font-size:12.5px;color:#4a5469;margin-top:6px}
+.tl .res{margin-top:8px;font-size:12px;padding:8px 11px;border-radius:10px;background:var(--green-soft);color:#166534}
+.upcoming .u{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.upcoming .u:last-child{border:0}
+.u .d{width:46px;text-align:center;border-radius:12px;background:#fff;padding:5px 0;box-shadow:0 4px 12px rgba(54,49,85,.06)}
+.u .d b{display:block;font-family:Inter;font-size:17px;line-height:1.1}
+.u .d small{font-size:10px;color:var(--muted);font-weight:700}
+.u .info b{font-size:13px}.u .info small{display:block;color:var(--muted);font-size:11.5px}
+.u .pill{margin-left:auto}
+
+/* drawer & modal */
+.overlay{position:fixed;inset:0;background:rgba(25,34,56,.22);backdrop-filter:blur(3px);z-index:50;display:none}
+.overlay.open{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:430px;max-width:100%;background:rgba(255,255,255,.94);z-index:60;box-shadow:-20px 0 60px rgba(54,49,85,.15);
+  transform:translateX(105%);transition:.28s ease;padding:24px;overflow:auto}
+.drawer.open{transform:none}
+.drawer .x{position:absolute;right:18px;top:16px;border:0;background:#f1f3f7;width:32px;height:32px;border-radius:10px;font-size:16px}
+.drawer h2{font-size:20px;letter-spacing:-.4px;margin:4px 0 6px}
+.dl{display:grid;grid-template-columns:100px 1fr;gap:9px 12px;font-size:13px;margin:16px 0}
+.dl dt{color:var(--muted);font-weight:600}
+.form{display:grid;gap:10px;margin-top:14px}
+.form label{font-size:12px;font-weight:700;color:#4a5469;display:grid;gap:5px}
+.form input,.form select,.form textarea{padding:9px 11px;border-radius:10px;border:1px solid rgba(69,79,112,.16);background:#fff;outline:none}
+.form textarea{min-height:80px;resize:vertical}
+.form .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:.25s;z-index:80}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+svg text{font-family:Inter,"Noto Sans KR",sans-serif}
+
+@media (max-width:1180px){.g4{grid-template-columns:repeat(2,1fr)}.g-73,.g3{grid-template-columns:1fr}.hero{flex-wrap:wrap}.hero .hero-kpis{margin-left:0}}
+@media (max-width:860px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;flex-direction:row;flex-wrap:wrap;padding:12px}
+  .brand,.nav-label,.side-foot{display:none}.nav-item{width:auto}.main{padding:16px}.country-layout{grid-template-columns:1fr}.c-list{position:relative;top:0}
+  .steps,.approach,.lifecycle,.effort,.g2{grid-template-columns:1fr}}
+
+/* ===== product-first additions ===== */
+.prod-nav{display:flex;flex-direction:column;gap:4px}
+.prod-nav .nav-item .pi{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;font-size:14px;background:linear-gradient(145deg,#eaf1ff,#f1edff)}
+.p-hero{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.p-hero .card{padding:22px 24px}
+.p-title{display:flex;align-items:center;gap:14px}
+.p-title .pi{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;font-size:26px;background:linear-gradient(145deg,#eaf1ff,#f1edff);box-shadow:inset 0 1px 0 #fff}
+.p-title h2{font-size:24px;letter-spacing:-.6px}
+.p-title .model{color:var(--muted);font-size:12.5px}
+.usp{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.usp span{font-size:12px;font-weight:700;padding:6px 11px;border-radius:10px;background:#fff;border:1px solid var(--line)}
+.lc-track{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.lc-step{padding:12px;border-radius:14px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.85)}
+.lc-step.on{background:#fff;border-color:rgba(57,115,246,.35);box-shadow:0 10px 24px rgba(57,115,246,.12)}
+.lc-step.done{background:var(--green-soft)}
+.lc-step b{font-size:13px;display:block}.lc-step small{font-size:11.5px;color:var(--muted)}
+.mini-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.mini-kpis div{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.6)}
+.mini-kpis span{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.mini-kpis b{font-family:Inter;font-size:19px;font-weight:800}
+.sec-title{display:flex;align-items:center;gap:10px;margin:26px 0 12px}
+.sec-title h3{font-size:17px;letter-spacing:-.3px}
+.sec-title .no{font-family:Inter;font-weight:800;font-size:12px;color:#fff;background:linear-gradient(145deg,#3973f6,#8069e8);padding:3px 9px;border-radius:8px}
+.sec-title .sub{color:var(--muted);font-size:12.5px}
+.sec-title .right{margin-left:auto;display:flex;gap:8px}
+/* sheet */
+.sheet-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.72);box-shadow:var(--shadow);max-height:560px}
+.sheet{border-collapse:separate;border-spacing:0;min-width:1500px;font-size:12.5px}
+.sheet th{position:sticky;top:0;z-index:2;background:#f5f7fb;color:#4a5469;font-size:11.5px;padding:0;border-bottom:1px solid #e3e7ef;border-right:1px solid #eceff5;white-space:nowrap}
+.sheet th .grp{display:block;padding:6px 10px;font-size:10.5px;color:#fff;letter-spacing:.3px}
+.sheet th .col{display:block;padding:8px 10px}
+.sheet td{padding:10px;border-bottom:1px solid #eef1f6;border-right:1px solid #f1f3f8;vertical-align:top;background:rgba(255,255,255,.55);max-width:220px}
+.sheet tr:hover td{background:#fff}
+.sheet td:first-child,.sheet th:first-child{position:sticky;left:0;z-index:3;background:#fff;box-shadow:2px 0 0 #eceff5}
+.sheet th:first-child{z-index:4;background:#f5f7fb}
+.sheet .clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sheet .t1{font-weight:700;color:var(--text)}
+.sheet .t2{color:#6b7489;font-size:11.5px;margin-top:2px}
+.g-a{background:#6c7cf5}.g-b{background:#8b6cf0}.g-c{background:#16a37f}.g-d{background:#e08a2b}
+.goal-chain{display:flex;flex-direction:column;gap:3px}
+.goal-chain span{font-size:11.5px;padding:2px 7px;border-radius:6px;background:#f2f4f8;color:#6b7489}
+.goal-chain span.now{background:var(--primary-soft);color:var(--primary);font-weight:700}
+.goal-chain span.done{background:var(--green-soft);color:var(--green)}
+/* materials */
+.mat-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.mat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.mat{display:flex;gap:12px;align-items:center;padding:14px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.9);box-shadow:0 6px 18px rgba(54,49,85,.04);transition:.15s}
+.mat:hover{background:#fff;transform:translateY(-1px);box-shadow:0 12px 26px rgba(54,49,85,.08)}
+.mat .di{width:42px;height:48px;border-radius:10px;display:grid;place-items:center;font-size:10.5px;font-weight:800;color:#fff;flex-shrink:0;font-family:Inter}
+.mat .info{min-width:0;flex:1}
+.mat .info b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mat .info small{color:var(--muted);font-size:11.5px}
+.mat .langs{display:flex;gap:4px;margin-top:5px}
+.mat .langs i{font-style:normal;font-size:10px;font-weight:800;padding:1px 6px;border-radius:5px;background:#eef1f7;color:#5f6880}
+.mat .dl-btn{border:0;background:var(--primary-soft);color:var(--primary);font-weight:800;font-size:12px;padding:8px 11px;border-radius:10px;white-space:nowrap;text-decoration:none}
+.gsrc{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:600}
+.gsrc i{width:8px;height:8px;border-radius:50%;background:#16a34a;display:inline-block}
+.overview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ov-card{cursor:pointer;transition:.18s}
+.ov-card:hover{transform:translateY(-2px);box-shadow:0 22px 50px rgba(54,49,85,.10)}
+@media (max-width:1180px){.p-hero,.overview-grid{grid-template-columns:1fr}.mini-kpis{grid-template-columns:repeat(2,1fr)}}
+
+/* single-line text */
+.sheet td{white-space:nowrap;max-width:none}
+.sheet .clamp{display:block;-webkit-line-clamp:unset;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.goal-chain span{white-space:nowrap}
+.lc-step b,.lc-step small,.p-title .model,.mat .info small,.kpi-label,.card-sub,.sec-title .sub,.u .info small,.u .info b,.prod-tab small,.env .v,.usp span,.pill{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-step small{display:block}
+.p-title>div{min-width:0}
+
+/* topbar fix */
+.topbar{flex-wrap:wrap;row-gap:10px}
+.topbar>div:first-child{flex:1 1 220px;min-width:0}
+.topbar h1,.topbar .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .right{flex:0 1 auto;flex-wrap:nowrap;min-width:0}
+.topbar .right *{white-space:nowrap;flex-shrink:0}
+#gSearch{min-width:0!important;width:200px;flex-shrink:1!important}
+#scopeSeg button{white-space:nowrap}
+.sample{white-space:nowrap}
+@media (max-width:1100px){#gSearch{width:150px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">M</div><div><b>Sales Strategy Hub</b><small>MEKICS 마케팅 · 영업</small></div></div>
+    <button class="nav-item" data-view="home"><span class="ico">◎</span>전체 오버뷰</button>
+    <div class="nav-label">제품 카테고리</div>
+    <div class="prod-nav" id="prodNav"></div>
+    <div class="nav-label">공통</div>
+    <button class="nav-item" data-view="library"><span class="ico">📂</span>전체 영업자료</button>
+    <button class="nav-item" data-view="activity"><span class="ico">🗂</span>활동 기록<span class="tag">출장·학회</span></button>
+    <div class="side-foot"><b><span class="gsrc"><i></i></span> Google 연동</b>전략 = Google Sheets<br>영업자료 = Google Drive<br>시트를 고치면 페이지에 바로 반영돼요.</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div><h1 id="pageTitle">전체 오버뷰</h1><div class="sub" id="pageSub">제품별 전략과 영업자료를 한곳에서</div></div>
+      <div class="right">
+        <input id="gSearch" class="btn" style="min-width:220px;text-align:left" placeholder="🔎 국가 · 자료 검색">
+        <div id="scopeSeg" style="display:flex;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);border-radius:12px;padding:3px">${''}</div>
+        <span class="sample">샘플 데이터</span>
+      </div>
+    </div>
+    <section class="view active" id="view-home"></section>
+    <section class="view" id="view-product"></section>
+    <section class="view" id="view-library"></section>
+    <section class="view" id="view-activity"><div class="toolbar" id="actChips"></div><div class="timeline" id="timeline"></div></section>
+  </main>
+</div>
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" style="width:520px"><button class="x" id="drawerX">✕</button><div id="drawerBody"></div></aside>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   데이터 구조 = Google Sheets 탭 구조와 1:1
+   Products · Strategy(제품×국가) · Materials(Drive 파일) · Competitors · Activities
+   지금은 샘플. 연결 후 Apps Script API에서 같은 형태로 받아옵니다.
+   ===================================================================== */
+const DATA={
+products:[
+ {id:'omniox',grp:'산소치료',name:'OmniOx',model:'HFT750 · HFT751 · HFT700 고유량 산소치료기',icon:'🫁',stage:3,folder:'18A-z8Ifax8gm0uZgQ9YoCx6oGqec_fao',
+  usp:['2~80 L/min 광범위 유량','HF · IV · NIV 라인업','일체형 가습','보험 인정 기준 대응','방사선종양과 호흡관리'],
+  position:'ICU 산소치료의 Value Premium — 글로벌 브랜드급 성능, 합리적 가격',
+  sub:{'00':'1DLRmXhiJvMcmJ-zv88F7lJNk9pMgri30','01':'1B1slvTNBaJkcu5iL64kjxwEVxZLXWoe-','02':'1623E63ONDWItqK3M6qUf3qtBP-Q5_oKf','03':'12dwL16zfDMKUe-mnq7QbkcxKlZQgyMX3','04':'1J6tfcHDCodBe0wx3eoRtcqnyG8LVeWFd','05':'1wSmUosf1-HN0rabctvHgrq4IKGfiQF3D','06':'1HMUcC1g_RDLMoQNudgJgr8f1KqLoPamg','07':'1y88LVzbInWg44N7xAmHAPplWRWklDe9b','08':'1jeffgKxHPQn6HFb_I-tBvFk7tVLYgLpK','09':'1CNCAVikNJbXr-qQYert3PqcelMUtKrxo','10':'1nQsKQJsRmGVWkySrRn8mqjpjfVKUlJ6l','18':'1_nRr27H7cIYi8FslXx1bI5U9qDdE44aJ','19':'1cuuZfFn6fiJmHEJG7j-_Bn3fRfIqGZHo'}},
+ {id:'mv50',grp:'인공호흡기',name:'MV50',model:'범용 인공호흡기 · ICU / 이송',icon:'🩺',stage:2,folder:'1Z_MiPXTrKOvcTQka4mupAm7H645IM1Cy',
+  usp:['침습 · 비침습 겸용','이송 사용','교체형 배터리','경량 설계','HFNC 모드'],
+  position:'ICU 확충 국가의 공공 입찰 표준 장비 — 이송 · ICU 겸용',
+  sub:{'01':'1nhsegwOZtCXvSOscTrbETJrSeCplRnLO','02':'1jZ5rfQgvBORKXYMgPfOw9CPKHJbJ_S_g','03':'1HjrXzo8RhIoD2Nfp-I8BOWEfkE6DNOTu','04':'1-3Qj3FxMAK1b6kkS3PXDW2CKBWHmZ0RH','05':'144rDfFmfKyXBTdGd_-ohfSBetRNUbkuL','06':'1cWUotIMHU79lgsjnA6C-lgqy00GDrYOD','07':'1hzBkQZhq_QO7OYo7fAVWpAXSJXhS-7h0','08':'174Jlz4D-jlY97gZTVVfZAu8XWyp79ROr','09':'1JDEuHIa4YkIl0OSIiLvLIPbvww7AP5og','10':'1yipjwW3EuH84y-qCQ74Q4EKLWATO0okX'}},
+ {id:'mv2000',grp:'인공호흡기',name:'MV2000',model:'인공호흡기',icon:'🫀',stage:3,folder:'1K8TCPzRymxMX3knkv6jFrrxbkmNB_7O4',usp:[],position:''},
+ {id:'mtv1000',grp:'인공호흡기',name:'MTV1000',model:'이송용 인공호흡기',icon:'🚑',stage:3,folder:'1zmvn8UwdLJP15Dp7aP7xuSnD4QTksscS',usp:[],position:''},
+ {id:'mv3000',grp:'인공호흡기',name:'MV3000',model:'인공호흡기',icon:'🫀',stage:1,folder:'1oTq72RFOk3SmEtLeQEXPTHjbvdutWP08',usp:[],position:''},
+ {id:'lf100',grp:'산소치료',name:'LF100',model:'',icon:'💨',stage:2,folder:'1pJPyG-EX83cfNetR07vOg57iwh1uoHVs',usp:[],position:''},
+ {id:'humidi',grp:'산소치료',name:'Humidi',model:'가습기',icon:'💧',stage:2,folder:'1ymyIA5xZc2AaN8wbZ-y--CMPWAZIj0Qg',usp:[],position:''},
+ {id:'pms',grp:'환자감시',name:'PMS',model:'환자감시장치 (New · Old)',icon:'📈',stage:2,folder:'1rJhL8Pmb36fnavE03F8WXzkGrzXSvDrr',usp:[],position:''},
+ {id:'cms',grp:'환자감시',name:'CMS',model:'중앙감시시스템',icon:'🖥',stage:2,folder:'1dzgy5aBaa_dB880EVma_GCsWh6gz90Dz',usp:[],position:''},
+ {id:'mp110p',grp:'환자감시',name:'Pulse Oximeter',model:'MP110P',icon:'📟',stage:1,folder:'1L-gLCHefw53663lziT618w6Ce3iFC0sU',usp:['SpO2 · PR 측정','OLED 디스플레이','저전력'],position:'OmniOx · MV50 번들 액세서리 + 단독 보급형'},
+ {id:'spo2',grp:'환자감시',name:'SpO2 Sensor',model:'',icon:'🔌',stage:2,folder:'13RPM8SHMEOCdAOK4fZpBLWJvDs5iWarE',usp:[],position:''},
+ {id:'circuit',grp:'소모품 · 액세서리',name:'Circuit',model:'호흡 회로',icon:'🧷',stage:2,folder:'157uPZHXzJKys-49_uuweksHP5QX46SNZ',usp:[],position:''},
+ {id:'cannula',grp:'소모품 · 액세서리',name:'Cannula',model:'비강 캐뉼라',icon:'🧷',stage:2,folder:'1My9RTLPFe1cHRehSlMfDuJgY1RYfpDyS',usp:[],position:''},
+ {id:'nebulizer',grp:'소모품 · 액세서리',name:'Nebulizer',model:'',icon:'🌫',stage:2,folder:'1qUWHZXzKdHUP0z8Ut0mFAfnWfBKWRv-R',usp:[],position:''},
+ {id:'pfs001',grp:'소모품 · 액세서리',name:'PFS001',model:'',icon:'📦',stage:1,folder:'14gxrb1QQJ61skwu6HcX0Cb3SwObO5wSO',usp:[],position:''}
+],
+drive:{root:'1zQn7GriUp3UL2XXLveby3zUlFGOyyrLR',marketing:'1pZ_rwDs4bxWHCjZe6B_sM_FZmwQ08DFb',products:'1FV5rdn6HKhUg2rpqxmzadCpXFjn_wvyE',strategy:'1mxd9Uh5HNlREqYBj1zMI4MYeUXv8YcKs',competitors:'1NblkB3buWFophYieBnftZw2yWLlqPfTV',keyMessage:'1xOWdAkJ1SKWMy-PwK9oJVvHC2Mqajbtl',toolCheck:'1cgcrIW6LIZKXW2WX_KcNfD_fCUpiXXly'},
+strategy:[
+ {p:'omniox',dom:1,c:'상급종합 (수도권)',flag:'🇰🇷',stage:3,owner:'국내영업1팀',env:{bid:'병원별 구매 심의 · 일부 조달청',ins:'HFNC 행위 급여 · 보험인정기준 적용',buy:'대리점 경유 납품 · 장비 심의위원회',pay:'월말 정산 60~90일'},
+  seg:'중환자실 / 호흡기내과 / 소아청소년과',player:'수도권 대리점 3곳 · 빅5 병원 KOL · 경쟁사 A 직판',pos:'글로벌 브랜드 대체 · 보험 인정 기준 완벽 대응',
+  goals:['빅5 레퍼런스 확보','상급종합 점유 확대','751 신모델 전환'],approach:'KOL 임상 데이터 + 보험인정기준 자료로 교체 수요 공략',target:2200,actual:2050,demo:18,lead:40,win:52,updated:'11/19'},
+ {p:'omniox',dom:1,c:'지방 거점병원',flag:'🇰🇷',stage:2,owner:'국내영업2팀',env:{bid:'조달청 · 지방의료원 입찰',ins:'HFNC 행위 급여',buy:'지역 대리점 납품',pay:'월말 정산'},
+  seg:'지방의료원 / 종합병원 / 요양병원',player:'지역 대리점 7곳 (대리점 운영 TOOL)',pos:'가격 대비 성능 · A/S 접근성',
+  goals:['권역별 대리점 정비','지방의료원 입찰 대응','요양병원 채널'],approach:'대리점 운영 TOOL로 월별 실적 · 재고 관리',target:1300,actual:980,demo:11,lead:35,win:41,updated:'11/17'},
+ {p:'omniox',dom:1,c:'방사선종양과 · 동물병원',flag:'🇰🇷',stage:1,owner:'전략기획팀',env:{bid:'병원별 직구매',ins:'비급여 / 해당 없음',buy:'과별 예산 · 동물병원 원장 결정',pay:'일시불 · 리스'},
+  seg:'대학병원 방사선종양과 / 2차 동물병원',player:'대학병원 3곳 문의 · 동물 응급학회',pos:'신규 적응: 호흡 관리(Respiratory Motion) · 수의 HFNC',
+  goals:['플라이어 · 학회 광고','데모 3곳','적응증 레퍼런스'],approach:'학회 광고 + 데모 장비 순회',target:300,actual:60,demo:4,lead:14,win:20,updated:'11/11'},
+ {p:'mv50',dom:1,c:'공공 · 군 병원',flag:'🇰🇷',stage:1,owner:'국내영업1팀',env:{bid:'조달청 · 국방 조달',ins:'인공호흡기 행위 급여',buy:'공공 입찰',pay:'정부 회계 규정'},
+  seg:'군 병원 / 공공의료원 / 이송',player:'공공 입찰 대리점',pos:'이송 · ICU 겸용 국산 장비',
+  goals:['조달 등록','군 병원 시연','공공의료원 입찰'],approach:'국산 장비 · 신속 A/S 강조',target:500,actual:120,demo:3,lead:10,win:15,updated:'11/06'},
+ {p:'omniox',c:'베트남',flag:'🇻🇳',stage:2,owner:'장현호',env:{bid:'공공 입찰 중심 (성 단위, 연 2회)',ins:'VSS 보험 · HFNC 행위 급여',buy:'등록 대리점 경유 입찰',pay:'L/C 60일 · 대금 지연 주의'},
+  seg:'Tier1 상급병원 / Tier2 성급 / Tier3 지방',player:'Hanoi Medical Supply(대리점) · Bach Mai(KOL) · 경쟁사 A 직판',pos:'Tier1 프리미엄 대체 · 가격 -25%',
+  goals:['Tier1 레퍼런스 3곳','성급 입찰 10건·4건 수주','MV50 동반 진입'],approach:'독점 대리점 + 서비스 파트너, ICU 산소치료 표준화 메시지',target:1800,actual:1530,demo:14,lead:62,win:38,updated:'11/18'},
+ {p:'omniox',c:'인도',flag:'🇮🇳',stage:1,owner:'김성원',env:{bid:'GeM 공공조달 + 사립 체인',ins:'PM-JAY · 장비비 미포함',buy:'병원 체인 본사 일괄 구매',pay:'T/T 선금 30%'},
+  seg:'Corporate 체인 / Public GeM / Mid-size 사립',player:'MedLine India(대리점) · Apollo 구매위원회',pos:'TCO(소모품 절감) 중심 가성비',
+  goals:['체인 1곳 평가 장비','체인 내 5개 병원','GeM 등록 · CKD 검토'],approach:'체인 본사 직접 영업 + 지역 서브딜러',target:1200,actual:610,demo:9,lead:48,win:22,updated:'11/15'},
+ {p:'omniox',c:'폴란드',flag:'🇵🇱',stage:1,owner:'장현호',env:{bid:'병원별 개별 입찰 (EU 조달)',ins:'NFZ 공보험 · 장비 병원 예산',buy:'병원 입찰 · 유럽 브랜드 선호',pay:'T/T 30~60일'},
+  seg:'대학병원 / 지역병원 / 소아병원',player:'MedPol(대리점 후보) · Warsaw Univ. Hospital',pos:'유럽 브랜드 대비 -20% Value Premium',
+  goals:['Warsaw Expo · 대리점 3곳 미팅','대학병원 평가 2대','체코·헝가리 확장'],approach:'전시회 리드 F/U 기반 대리점 발굴',target:600,actual:180,demo:4,lead:26,win:15,updated:'11/12'},
+ {p:'omniox',c:'멕시코',flag:'🇲🇽',stage:1,owner:'김성원',env:{bid:'IMSS · ISSSTE 연방 통합 구매',ins:'IMSS 공보험',buy:'COFEPRIS 등록 필수',pay:'T/T · 지연 가능'},
+  seg:'Federal / State / Private 그룹',player:'Grupo Salud MX(대리점 후보)',pos:'노후 ICU 장비 교체 제안',
+  goals:['COFEPRIS 착수','민간 그룹 2곳 시연','IMSS 입찰'],approach:'인허가 대행 + 민간 우선 진입',target:500,actual:120,demo:2,lead:15,win:12,updated:'11/11'},
+ {p:'mv50',c:'이집트',flag:'🇪🇬',stage:2,owner:'장현호',env:{bid:'UPA 통합조달청 대형 입찰',ins:'UHI 단계 도입',buy:'정부 입찰 + 군 병원 별도',pay:'L/C 90일 · 외화 리스크'},
+  seg:'Public UPA / Military / Private',player:'Nile Medical Trading(대리점) · UPA · 경쟁사 B 저가',pos:'경쟁사 대비 -10~15% 입찰 밴드',
+  goals:['EDA 등록·대리점','UPA 2건 수주·군 병원 시연','OmniOx 번들 입찰'],approach:'ICU 확충 패키지 (인공호흡기+HFNC)',target:900,actual:860,demo:7,lead:30,win:44,updated:'11/10'},
+ {p:'mv50',c:'페루',flag:'🇵🇪',stage:2,owner:'장현호',env:{bid:'EsSalud · MINSA 공공 입찰',ins:'EsSalud 근로자 보험',buy:'대리점 경유 입찰',pay:'T/T 45일'},
+  seg:'Public / Regional 이송 / Private',player:'Andes Medical(대리점)',pos:'고지대 · 이송 겸용 운용성',
+  goals:['DIGEMID 등록·첫 수주','EsSalud 재구매','OmniOx 동반'],approach:'입찰 전문 대리점 + A/S 패키지',target:400,actual:390,demo:5,lead:18,win:41,updated:'11/08'},
+ {p:'mv50',c:'베트남',flag:'🇻🇳',stage:1,owner:'장현호',env:{bid:'공공 입찰 (성 단위)',ins:'VSS',buy:'OmniOx 대리점 활용',pay:'L/C 60일'},
+  seg:'Tier1 ICU / 이송',player:'Hanoi Medical Supply',pos:'OmniOx 고객 대상 교차 판매',
+  goals:['등록 신청','OmniOx 고객 시연','번들 입찰'],approach:'기존 OmniOx 채널 교차 판매',target:300,actual:40,demo:2,lead:9,win:10,updated:'11/05'},
+ {p:'mp110p',dom:1,c:'국내 전체',flag:'🇰🇷',stage:1,owner:'국내영업',env:{bid:'조달청 · 병원 직구매',ins:'해당 없음',buy:'대리점 · 온라인',pay:'월말 정산'},
+  seg:'병원 번들 / 재택',player:'국내 대리점 7곳',pos:'OmniOx 번들 액세서리',
+  goals:['등록 완료','번들 판매','해외 확장'],approach:'OmniOx · MV50 납품 시 번들',target:150,actual:20,demo:0,lead:12,win:0,updated:'11/02'}
+],
+materials:[
+ {p:'omniox',cat:'04',name:'OmniOx750 HF Catalogue (Global)',type:'PDF',id:'11reCR6xECgDI5NUG7vmBTUwN2foJ3n2D',ver:'2026-04-14'},
+ {p:'omniox',cat:'04',name:'OmniOx750 IV Catalogue (Global)',type:'PDF',id:'1F7niZ-K2wI6bG70BYIXdl0GQYE5hZSff',ver:'2026-04-14'},
+ {p:'omniox',cat:'04',name:'OmniOx750 NIV Catalogue (Global)',type:'PDF',id:'1Ju7gf-7CdjAs-SxXvknBZftjA5VHkrmr',ver:'2026-04-14'},
+ {p:'omniox',cat:'04',name:'OmniOx751 Catalogue',type:'PDF',id:'1UHqHcCkIr10gFT2eyaqlCLUcYZkPYp27',ver:'2026-06-10'},
+ {p:'omniox',cat:'04',name:'OmniOx750U Catalogue (US)',type:'PDF',id:'1y-klvCi3E-9Up7YlMme-Yl0u9KirMHzt',ver:'US'},
+ {p:'omniox',cat:'04',name:'OmniOx700 Catalogue v1.0',type:'PDF',id:'1h30htV0_ImuBfVEYQRV7ZIjJYeAHgkKZ',ver:'v1.0'},
+ {p:'omniox',cat:'01',name:'HFT751 Specification (EN)',type:'PDF',id:'15T_tiVUOZYIUlRo21DpY_twWY8UUyhAT',ver:'Rev0.0'},
+ {p:'omniox',cat:'01',name:'HFT750 Commodity Description',type:'PDF',id:'1_u48sVVp_po1_ZmxF7JJTfHBAIWz3HOa',ver:'2024-05-10'},
+ {p:'omniox',cat:'01',name:'HFT750 IV Commodity Description',type:'PDF',id:'1DAD_kkUolnDA1urIGmvB23Xk62_-YHcF',ver:'2024-09-24'},
+ {p:'omniox',cat:'01',name:'HFT700 Commodity Description',type:'PDF',id:'18RD-2xqy7VuH5KtqM-HbIlD_Cakb_QD9',ver:'Ver.3.2'},
+ {p:'omniox',cat:'ST',name:'HFT750 Marketing Point (EN)',type:'PDF',id:'1Gq2kxJfAvkjAXdddS-kjKx64F1h-JIKX',ver:'전략자료'},
+ {p:'omniox',cat:'ST',name:'OmniOx Marketing Point (EN)',type:'PPT',id:'10HAHo4PQIeUVTjQp5iLQIb2OF_zCRQah',ver:'전략자료'},
+ {p:'omniox',cat:'ST',name:'OmniOx HFT700 vs HFT750',type:'PPT',id:'1q99h7OMEorE-AvadRT1cbvd8uajzjWlr',ver:'Rev.2'},
+ {p:'omniox',cat:'ST',name:'OmniOx 보험인정기준',type:'PPT',id:'18nyJcfmzgskERo5XrUdlOBNmK_GYZz1X',ver:''},
+ {p:'omniox',cat:'ST',name:'HFNC Market Estimation',type:'PPT',id:'1ugjtmiherKGRl2M27nk2BRkBj9XICPCQ',ver:'vr3'}
+],
+competitors:{
+ omniox:{rows:['유량 범위','FiO2','소아 모드','가습','원격 모니터링','가격(지수)'],cols:[{n:'OmniOx',us:1,v:['2~80 L/min','21~100%','내장','일체형','지원','100']},{n:'경쟁사 A',v:['2~70 L/min','21~100%','별도 모델','일체형','미지원','135']},{n:'경쟁사 B',v:['5~60 L/min','30~95%','미지원','별도','미지원','70']}]},
+ mv50:{rows:['환기 모드','이송','배터리','무게','HFNC','가격(지수)'],cols:[{n:'MV50',us:1,v:['침습·비침습','지원','교체형','경량','지원','100']},{n:'경쟁사 A',v:['침습·비침습','지원','내장','중량','옵션','140']},{n:'경쟁사 C',v:['침습','미지원','내장','중량','미지원','85']}]},
+ mp110p:{rows:['측정','디스플레이','배터리','가격(지수)'],cols:[{n:'MP110P',us:1,v:['SpO2·PR','OLED','AAA','100']},{n:'경쟁사 D',v:['SpO2·PR·PI','LED','AAA','90']}]}
+},
+activities:[
+ {type:'학회',p:'omniox',c:'폴란드',date:'2026-12-03',title:'Warsaw Medical Expo F/U 미팅',desc:'리드 상위 3개 대리점 후속 미팅',up:1},
+ {type:'출장',p:'omniox',c:'베트남',date:'2026-12-08',title:'성급 입찰 대응 출장',desc:'하노이 · 다낭 병원 3곳',up:1},
+ {type:'출장',p:'omniox',c:'인도',date:'2026-11-15',title:'병원 체인 평가 미팅',desc:'Apollo 구매위원회 · 평가 장비 2대',res:'평가 8주 합의'},
+ {type:'자료',p:'omniox',c:'',date:'2026-11-11',title:'방사선종양과 플라이어 배포',desc:'신규 적응 참조자료',res:'대학병원 3곳 문의'},
+ {type:'학회',p:'omniox',c:'폴란드',date:'2026-10-14',title:'Warsaw Medical Expo 2026',desc:'OmniOx 단독 부스',res:'리드 26건'},
+ {type:'보고',p:'mv50',c:'이집트',date:'2026-10-02',title:'UPA 입찰 결과',desc:'MV50 20대',res:'수주'},
+ {type:'출장',p:'mv50',c:'페루',date:'2026-09-20',title:'EsSalud A/S 교육',desc:'엔지니어 6명',res:'재구매 입찰 확정'}
+]};
+
+/* ===== helpers ===== */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const fmt=n=>n.toLocaleString('ko-KR');
+const rate=s=>Math.round(s.actual/s.target*100);
+const rc=r=>r>=90?'#16a34a':r>=60?'#3973f6':'#e0475b';
+const P=id=>DATA.products.find(p=>p.id===id);
+const inScope=s=>cur.scope==='전체'||(cur.scope==='국내')===!!s.dom;
+const SC=()=>DATA.strategy.filter(inScope);
+const fileCol={PDF:'#e0475b',XLS:'#16a34a',PPT:'#d97706',MP4:'#8069e8',DOC:'#3973f6'};
+const typeIcon={출장:'✈️',학회:'🎪',보고:'📊',자료:'📁'},typePill={출장:'p-blue',학회:'p-purple',보고:'p-amber',자료:'p-green'};
+const STAGES=[['론칭 준비','사양 → 시장평가'],['개량','특장점 재발굴 · 업그레이드'],['확산','성공사례 · 교육 · 포지셔닝']];
+const CAT={'ST':['전략 · 마케팅 포인트','🎯'],'04':['카다로그','📘'],'01':['스펙시트','📐'],'06':['PPT','📊'],'05':['리플렛 · 배너','🪧'],'07':['임상 데이터','🧪'],'19':['임상 논문','📚'],'18':['데모 Reference','🎬'],'09':['경쟁사 자료','⚔️'],'10':['제품 영상','🎞'],'08':['제품 사진','🖼'],'02':['사용자 매뉴얼','📗'],'03':['서비스 매뉴얼','🛠'],'00':['허가증','📜']};
+const CAT_ORDER=['ST','04','01','06','05','07','19','18','09','10','08','02','03','00'];
+const GRPS=['산소치료','인공호흡기','환자감시','소모품 · 액세서리'];
+const fUrl=id=>'https://drive.google.com/drive/folders/'+id, dUrl=id=>'https://drive.google.com/file/d/'+id+'/view';
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200)}
+function stagePill(s){return`<span class="pill ${s>=3?'p-green':s===2?'p-blue':'p-amber'}">${s}단계</span>`}
+function matCard(m){return`<a class="mat" href="${dUrl(m.id)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><div class="di" style="background:${fileCol[m.type]||'#3973f6'}">${m.type}</div><div class="info"><b title="${m.name}">${m.name}</b><small>${P(m.p).name} · ${CAT[m.cat][0]}${m.ver?' · '+m.ver:''}</small></div><span class="dl-btn">열기 ↗</span></a>`}
+
+/* ===== routing ===== */
+let cur={view:'home',p:'omniox',cat:'전체',act:'전체',scope:'전체'};
+function go(view,p){cur.view=view;if(p)cur.p=p;cur.cat='전체';
+  $$('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+view));
+  $$('.nav-item').forEach(b=>b.classList.toggle('active',(b.dataset.view===view&&view!=='product')||(view==='product'&&b.dataset.p===cur.p)));
+  const T={home:['전체 오버뷰','제품별 전략과 영업자료를 한곳에서'],library:['전체 영업자료','Google Drive · 제품별 · 카테고리별'],activity:['활동 기록','출장 · 학회 · 보고 · 자료']};
+  if(view==='product'){const pr=P(cur.p);$('#pageTitle').textContent=pr.name+' 전략';$('#pageSub').textContent=pr.model;renderProduct()}
+  else{$('#pageTitle').textContent=T[view][0];$('#pageSub').textContent=T[view][1]}
+  if(view==='home')renderHome();if(view==='library')renderLibrary();if(view==='activity')renderActivity();
+  try{history.replaceState(null,'','#'+(view==='product'?cur.p:view))}catch(e){}
+  window.scrollTo({top:0,behavior:'smooth'})}
+document.addEventListener('click',e=>{const n=e.target.closest('[data-view]');if(n)go(n.dataset.view,n.dataset.p)});
+
+/* ===== home ===== */
+function renderHome(){
+  const S=SC(),T=S.reduce((a,s)=>a+s.target,0),A=S.reduce((a,s)=>a+s.actual,0);
+  $('#view-home').innerHTML=`
+  <div class="grid g4">
+   ${[['전체 매출 실적 / 목표',`${fmt(A)}<small>/ ${fmt(T)} 백만원</small>`,`달성률 <b style="color:${rc(A/T*100)}">${Math.round(A/T*100)}%</b>`],
+     ['전략 행 (제품×국가/권역)',`${S.length}<small>건</small>`,`국내 ${S.filter(s=>s.dom).length} · 해외 ${S.filter(s=>!s.dom).length}`],
+     ['Demo · Lead',`${S.reduce((a,s)=>a+s.demo,0)}<small>/ ${S.reduce((a,s)=>a+s.lead,0)}</small>`,'파트너 노력 합계'],
+     ['제품 라인업',`${DATA.products.length}<small>개</small>`,'Google Drive 영업자료 연결']].map(k=>`<div class="card kpi"><div class="kpi-label">${k[0]}</div><div class="kpi-value">${k[1]}</div><div class="kpi-foot">${k[2]}</div></div>`).join('')}
+  </div>
+  <div class="sec-title"><h3>제품 카테고리</h3><span class="sub">카드를 누르면 제품별 전략 오버뷰와 영업자료로 이동</span></div>
+  <div class="overview-grid">${DATA.products.filter(p=>S.some(s=>s.p===p.id)).map(p=>{const ss=S.filter(s=>s.p===p.id),t=ss.reduce((a,s)=>a+s.target,0),a=ss.reduce((a,s)=>a+s.actual,0),r=t?Math.round(a/t*100):0;
+   return`<div class="card ov-card" data-view="product" data-p="${p.id}"><div class="p-title"><div class="pi">${p.icon}</div><div><h2 style="font-size:20px">${p.name}</h2><div class="model">${p.model}</div></div></div>
+    <div class="lc-track" style="margin-top:14px">${STAGES.map((s,i)=>`<div class="lc-step ${i+1===p.stage?'on':i+1<p.stage?'done':''}"><b>${i+1<p.stage?'✓ ':''}${s[0]}</b></div>`).join('')}</div>
+    <div class="mini-kpis" style="grid-template-columns:repeat(3,1fr)"><div><span>진출 국가</span><b>${ss.length}</b></div><div><span>달성률</span><b style="color:${rc(r)}">${r}%</b></div><div><span>자료 폴더</span><b>${Object.keys(p.sub||{}).length||1}</b></div></div>
+    <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">${ss.map(s=>`<span class="pill p-gray">${s.flag} ${s.c}</span>`).join('')}</div></div>`}).join('')}</div>
+  <div class="card mt"><div class="card-head"><div><h3>전체 제품 라인업</h3><div class="card-sub">Google Drive 02 제품 자료 기준 · 누르면 제품 페이지</div></div></div>
+   <div class="grid g4">${GRPS.map(g=>`<div><div class="kpi-label" style="margin-bottom:8px">${g}</div><div style="display:flex;flex-wrap:wrap;gap:6px">${DATA.products.filter(p=>p.grp===g).map(p=>`<button class="chip" data-view="product" data-p="${p.id}">${p.icon} ${p.name}</button>`).join('')}</div></div>`).join('')}</div></div>
+  <div class="grid g2 mt">
+   <div class="card"><div class="card-head"><div><h3>최신 카다로그 · 전략자료</h3><div class="card-sub">Google Drive에서 바로 열기</div></div><button class="btn sm" data-view="library">전체 →</button></div><div class="mat-grid" style="grid-template-columns:1fr">${[...DATA.materials].sort((a,b)=>b.ver.localeCompare(a.ver)).slice(0,4).map(matCard).join('')}</div></div>
+   <div class="card"><div class="card-head"><div><h3>다가오는 일정</h3></div><button class="btn sm" data-view="activity">전체 →</button></div><div class="upcoming">${DATA.activities.filter(a=>a.up).map(a=>{const d=new Date(a.date);return`<div class="u"><div class="d"><small>${d.getMonth()+1}월</small><b>${d.getDate()}</b></div><div class="info"><b>${a.title}</b><small>${P(a.p).name} · ${a.c||'공통'} · ${a.desc}</small></div><span class="pill ${typePill[a.type]}">${a.type}</span></div>`}).join('')}</div></div>
+  </div>`;
+}
+
+/* ===== product ===== */
+function renderProduct(){
+  const p=P(cur.p),ss=SC().filter(s=>s.p===p.id),mats=DATA.materials.filter(m=>m.p===p.id),cmp=DATA.competitors[p.id];
+  const t=ss.reduce((a,s)=>a+s.target,0),a=ss.reduce((a,s)=>a+s.actual,0);
+  $('#view-product').innerHTML=`
+  <div class="p-hero">
+   <div class="card"><div class="p-title"><div class="pi">${p.icon}</div><div><h2>${p.name}</h2><div class="model">${p.model}</div></div></div>
+    <div class="env" style="margin-top:14px"><div class="k">POSITIONING</div><div class="v">${p.position||'<span class=muted>포지셔닝 문장 미등록 · 시트 Products 탭에서 입력</span>'}</div></div>
+    <div class="usp">${p.usp.map(u=>`<span>✦ ${u}</span>`).join('')}</div></div>
+   <div class="card"><h3>제품 라이프사이클</h3><div class="card-sub">론칭 준비 → 개량 → 확산</div>
+    <div class="lc-track" style="margin-top:12px">${STAGES.map((s,i)=>`<div class="lc-step ${i+1===p.stage?'on':i+1<p.stage?'done':''}"><b>${i+1<p.stage?'✓ ':i+1===p.stage?'● ':''}${s[0]}</b><small>${s[1]}</small></div>`).join('')}</div>
+    <div class="mini-kpis"><div><span>진출 국가</span><b>${ss.length}</b></div><div><span>목표 달성</span><b style="color:${rc(t?a/t*100:0)}">${t?Math.round(a/t*100):0}%</b></div><div><span>Demo</span><b>${ss.reduce((x,s)=>x+s.demo,0)}</b></div><div><span>자료</span><b>${mats.length}</b></div></div></div>
+  </div>
+
+  <div class="sec-title"><span class="no">A</span><h3>국가별 전략 오버뷰</h3><span class="sub">시장환경 → 목표 수립 → 성과표 · 행을 누르면 상세</span>
+   <div class="right"><span class="gsrc"><i></i>Google Sheets · Strategy 탭</span><button class="btn sm" onclick="toast('연결 후 원본 Google 시트가 열립니다')">시트에서 편집 ↗</button></div></div>
+  <div class="sheet-wrap"><table class="sheet"><thead>
+   <tr><th rowspan="2"><span class="grp" style="background:#192238">국가</span><span class="col">국가/권역 · 담당</span></th>
+    <th colspan="4"><span class="grp g-a">① 시장환경</span></th><th colspan="2"><span class="grp g-a">② 플레이어 · 시장구분</span></th>
+    <th colspan="3"><span class="grp g-b">PLAN · 목표 수립</span></th><th colspan="4"><span class="grp g-c">DO-SEE · 성과표</span></th><th><span class="grp g-d">UPDATE</span></th></tr>
+   <tr>${['입찰','보험체계','구매형태','지불방식','시장 구분','주요 Player','포지셔닝','목표 1→2→3단계','접근 방법','매출 목표 / 실적','Demo · Lead','성공률','최근'].map(h=>`<th><span class="col">${h}</span></th>`).join('')}</tr></thead>
+   <tbody>${ss.length?'':`<tr><td colspan="14" style="padding:28px;text-align:center;color:var(--muted)">${cur.scope==='전체'?'':cur.scope+' '}등록된 전략이 없어요 · Google 시트 <b>Strategy</b> 탭에 ${p.name} 행을 추가하면 여기에 바로 표시됩니다</td></tr>`}${ss.map((s,i)=>{const r=rate(s);return`<tr class="click" onclick="openStrategy('${p.id}',${DATA.strategy.indexOf(s)})">
+    <td><div class="t1">${s.flag} ${s.c}</div><div class="t2"><span class="pill ${s.dom?'p-purple':'p-blue'}">${s.dom?'국내':'해외'}</span> ${s.owner} · ${stagePill(s.stage)}</div></td>
+    ${['bid','ins','buy','pay'].map(k=>`<td><div class="clamp">${s.env[k]}</div></td>`).join('')}
+    <td><div class="clamp">${s.seg}</div></td><td><div class="clamp">${s.player}</div></td><td><div class="clamp t1">${s.pos}</div></td>
+    <td><div class="goal-chain">${s.goals.map((g,j)=>`<span class="${j+1<s.stage?'done':j+1===s.stage?'now':''}">${j+1}. ${g}</span>`).join('')}</div></td>
+    <td><div class="clamp">${s.approach}</div></td>
+    <td><div class="t1 num">${fmt(s.actual)} / ${fmt(s.target)}</div><div class="bar ${r>=90?'green':r<60?'red':''}" style="margin-top:6px"><i style="width:${Math.min(r,100)}%"></i></div><div class="t2 num" style="color:${rc(r)};font-weight:800">${r}%</div></td>
+    <td class="num"><div class="t1">${s.demo} · ${s.lead}</div></td><td class="num"><div class="t1" style="color:${rc(s.win*2)}">${s.win}%</div></td><td class="muted num">${s.updated}</td></tr>`}).join('')}</tbody></table></div>
+
+  <div class="sec-title"><span class="no">B</span><h3>${p.name} 영업자료</h3><span class="sub">클릭하면 Google Drive에서 바로 열림 · 다운로드</span>
+   <div class="right"><span class="gsrc"><i></i>Google Drive · ${p.name} 폴더</span><a class="btn sm" style="text-decoration:none" href="${fUrl(p.folder)}" target="_blank" rel="noopener">폴더 열기 ↗</a></div></div>
+  <div class="mat-cats" id="matCats"></div><div class="mat-grid" id="matGrid"></div>
+
+  ${cmp?`<div class="sec-title"><span class="no">C</span><h3>타사 비교 · 시장 경쟁 현황</h3><span class="sub">가격은 ${p.name}=100 기준 지수 · 샘플</span>${p.sub&&p.sub['09']?`<div class="right"><a class="btn sm" style="text-decoration:none" href="${fUrl(p.sub['09'])}" target="_blank" rel="noopener">경쟁사 자료 폴더 ↗</a></div>`:''}</div>
+  <div class="card" style="padding:8px 14px"><table class="cmp"><thead><tr><th>항목</th>${cmp.cols.map(c=>`<th class="${c.us?'us':''}">${c.n}</th>`).join('')}</tr></thead><tbody>${cmp.rows.map((r,i)=>`<tr><td>${r}</td>${cmp.cols.map(c=>`<td class="${c.us?'us':''}">${c.v[i]}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:''}`;
+  renderMats();addTips();
+}
+function addTips(){$$('.clamp,.lc-step small,.p-title .model,.mat .info small,.u .info small').forEach(e=>{if(!e.title)e.title=e.textContent.trim()})}
+function renderMats(){
+  const p=P(cur.p),mats=DATA.materials.filter(m=>m.p===cur.p),sub=p.sub||{};
+  const keys=CAT_ORDER.filter(k=>sub[k]||mats.some(m=>m.cat===k));
+  $('#matCats').innerHTML=`<button class="chip ${cur.cat==='전체'?'active':''}" onclick="cur.cat='전체';renderMats()">전체</button>`+keys.map(k=>{const n=mats.filter(m=>m.cat===k).length;return`<button class="chip ${k===cur.cat?'active':''}" onclick="cur.cat='${k}';renderMats()">${CAT[k][1]} ${CAT[k][0]}${n?` <span class="num" style="opacity:.6">${n}</span>`:''}</button>`}).join('');
+  const show=mats.filter(m=>cur.cat==='전체'||m.cat===cur.cat);
+  const folders=(cur.cat==='전체'?keys:[cur.cat]).filter(k=>sub[k]);
+  $('#matGrid').innerHTML=(show.length?show.map(matCard).join(''):'')+
+   folders.map(k=>`<a class="mat" href="${fUrl(sub[k])}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;background:rgba(255,255,255,.45);border-style:dashed"><div class="di" style="background:linear-gradient(145deg,#6c7cf5,#8b6cf0);font-size:18px">${CAT[k][1]}</div><div class="info"><b>${CAT[k][0]} 폴더</b><small>Google Drive · ${p.name} / ${k} ${CAT[k][0]}</small></div><span class="dl-btn">폴더 ↗</span></a>`).join('')+
+   (!show.length&&!folders.length?`<a class="mat" href="${fUrl(p.folder)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><div class="di" style="background:#3973f6;font-size:18px">📁</div><div class="info"><b>${p.name} 전체 폴더</b><small>하위 폴더 연결 예정</small></div><span class="dl-btn">폴더 ↗</span></a>`:'');
+}
+function openStrategy(pid,idx){const s=DATA.strategy[idx],p=P(pid),r=rate(s);
+  const env=[['입찰','bid'],['보험체계','ins'],['구매형태','buy'],['지불방식','pay']];
+  openDrawer(`<span class="pill p-blue">${p.name}</span><h2>${s.flag} ${s.c} 전략</h2><div class="muted">담당 ${s.owner} · ${s.stage}단계 진행 · 업데이트 ${s.updated}</div>
+   <div class="sec-title" style="margin-top:18px"><h3 style="font-size:14px">① 시장환경</h3></div><div class="env-grid" style="grid-template-columns:1fr 1fr">${env.map(e=>`<div class="env"><div class="k">${e[0]}</div><p style="color:var(--text);font-weight:600">${s.env[e[1]]}</p></div>`).join('')}</div>
+   <div class="env" style="margin-top:10px"><div class="k">시장 구분 · 주요 Player</div><p style="color:var(--text)">${s.seg}<br>${s.player}</p></div>
+   <div class="sec-title"><h3 style="font-size:14px">② 목표 수립</h3></div>
+   <div class="env"><div class="k">포지셔닝</div><div class="v">${s.pos}</div></div>
+   <div class="steps" style="grid-template-columns:1fr;gap:8px;margin-top:10px">${s.goals.map((g,j)=>`<div class="step ${j+1===s.stage?'now':''}" style="padding:12px 14px"><div class="s-no">STEP ${j+1} ${j+1<s.stage?'<span class="pill p-green">완료</span>':j+1===s.stage?'<span class="pill p-blue">진행 중</span>':''}</div><b>${g}</b></div>`).join('')}</div>
+   <div class="env" style="margin-top:10px"><div class="k">③ 접근 방법</div><p style="color:var(--text)">${s.approach}</p></div>
+   <div class="sec-title"><h3 style="font-size:14px">성과표 (Feedback)</h3></div>
+   <div class="effort"><div class="env"><div class="k">달성률</div><div class="big" style="color:${rc(r)}">${r}%</div></div><div class="env"><div class="k">DEMO / LEAD</div><div class="big">${s.demo}/${s.lead}</div></div><div class="env"><div class="k">성공률</div><div class="big">${s.win}%</div></div></div>
+   <div class="sec-title"><h3 style="font-size:14px">관련 영업자료</h3></div><div class="mat-grid" style="grid-template-columns:1fr">${DATA.materials.filter(m=>m.p===pid&&['영업지원','성공사례','제품소개'].includes(m.cat)).slice(0,3).map(matCard).join('')}</div>`)}
+
+/* ===== library ===== */
+function renderLibrary(){
+  const q=($('#gSearch').value||'').trim().toLowerCase(),D=DATA.drive;
+  const quick=[['마케팅 머티리얼 전체',D.marketing,'📂'],['제품 자료',D.products,'📦'],['전략 자료',D.strategy,'🎯'],['타사 자료',D.competitors,'⚔️'],['국내영업 폴더','1Xd2rsct4IbwfR8XoN_Ekirtn00squB1A','🇰🇷'],['해외영업 폴더','1IpIjvyCo78dGZK_3fCzvQgaFxvmlU52w','🌐'],['국내 주요 사업','1L0cIHL-v1bBsXZpoDEoTAAyzdsW5jGtO','🏥'],['해외 주요 사업','1fxDRAuAUCgZr53psvdiu3G15I-qdUdb3','✈️']];
+  let h=`<div class="sec-title"><h3>바로가기</h3><span class="sub">이관용-영업본부 › 0. 사업전략기획 › 1. MARKETING MATERIAL</span></div><div class="mat-grid">${quick.map(x=>`<a class="mat" href="${fUrl(x[1])}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><div class="di" style="background:linear-gradient(145deg,#3973f6,#8069e8);font-size:18px">${x[2]}</div><div class="info"><b>${x[0]}</b><small>Google Drive 폴더</small></div><span class="dl-btn">열기 ↗</span></a>`).join('')}
+   <a class="mat" href="${dUrl(D.keyMessage)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><div class="di" style="background:#16a34a">XLS</div><div class="info"><b>key message.xlsx</b><small>제품별 핵심 메시지</small></div><span class="dl-btn">열기 ↗</span></a>
+   <a class="mat" href="${dUrl(D.toolCheck)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><div class="di" style="background:#16a34a">XLS</div><div class="info"><b>영업Tool 보유현황 체크리스트</b><small>제품별 자료 보유 현황</small></div><span class="dl-btn">열기 ↗</span></a></div>`;
+  GRPS.forEach(g=>{const ps=DATA.products.filter(p=>p.grp===g&&(!q||p.name.toLowerCase().includes(q)||DATA.materials.some(m=>m.p===p.id&&m.name.toLowerCase().includes(q))));if(!ps.length)return;
+   h+=`<div class="sec-title"><h3>${g}</h3><span class="sub">${ps.length}개 제품</span></div><div class="mat-grid">${ps.map(p=>{const n=DATA.materials.filter(m=>m.p===p.id).length;return`<div class="mat" style="cursor:pointer" data-view="product" data-p="${p.id}"><div class="di" style="background:linear-gradient(145deg,#eaf1ff,#f1edff);font-size:20px">${p.icon}</div><div class="info"><b>${p.name}</b><small>${p.model||'제품 자료'}${n?' · 주요 파일 '+n+'개':''}</small></div><a class="dl-btn" href="${fUrl(p.folder)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">폴더 ↗</a></div>`}).join('')}</div>`;
+   if(q){const ms=DATA.materials.filter(m=>ps.some(p=>p.id===m.p)&&m.name.toLowerCase().includes(q));if(ms.length)h+=`<div class="mat-grid mt">${ms.map(matCard).join('')}</div>`}});
+  $('#view-library').innerHTML=h;
+}
+/* ===== activity ===== */
+function renderActivity(){
+  $('#actChips').innerHTML=['전체','출장','학회','보고','자료'].map(t=>`<button class="chip ${t===cur.act?'active':''}" onclick="cur.act='${t}';renderActivity()">${t==='전체'?t:typeIcon[t]+' '+t}</button>`).join('');
+  $('#timeline').innerHTML=DATA.activities.filter(a=>cur.act==='전체'||a.type===cur.act).sort((a,b)=>b.date.localeCompare(a.date)).map(a=>`<div class="tl"><span class="dot">${typeIcon[a.type]}</span><div class="card"><div class="row"><span class="pill ${typePill[a.type]}">${a.type}</span>${a.up?'<span class="pill p-amber">예정</span>':''}<b>${a.title}</b><span class="muted" style="font-size:12px">${P(a.p).name} · ${a.c||'공통'}</span><span class="date">${a.date}</span></div><p>${a.desc}</p>${a.res?`<div class="res">결과 · ${a.res}</div>`:''}</div></div>`).join('');
+}
+
+/* ===== drawer / init ===== */
+function openDrawer(h){$('#drawerBody').innerHTML=h;$('#drawer').classList.add('open');$('#overlay').classList.add('open')}
+function closeDrawer(){$('#drawer').classList.remove('open');$('#overlay').classList.remove('open')}
+$('#drawerX').onclick=closeDrawer;$('#overlay').onclick=closeDrawer;document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
+$('#prodNav').innerHTML=GRPS.map(g=>`<div style="font-size:10.5px;color:var(--muted);font-weight:700;padding:8px 12px 2px">${g}</div>`+DATA.products.filter(p=>p.grp===g).map(p=>{const n=DATA.strategy.filter(s=>s.p===p.id).length;return`<button class="nav-item" data-view="product" data-p="${p.id}" style="padding:7px 12px"><span class="pi">${p.icon}</span>${p.name}${n?`<span class="tag">${n}개국</span>`:''}</button>`}).join('')).join('');
+$('.sidebar').style.overflowY='auto';
+$('#gSearch').addEventListener('input',()=>{if(cur.view!=='library')go('library');else renderLibrary()});
+function renderScope(){$('#scopeSeg').innerHTML=['전체','국내','해외'].map(x=>`<button onclick="cur.scope='${x}';renderScope();go(cur.view)" style="border:0;padding:6px 13px;border-radius:9px;font-weight:700;font-size:12.5px;background:${cur.scope===x?'#192238':'transparent'};color:${cur.scope===x?'#fff':'#5a6479'}">${x==='국내'?'🇰🇷 ':x==='해외'?'🌐 ':''}${x}</button>`).join('')}
+renderScope();
+function fromHash(){const h=(location.hash||'').slice(1);if(P(h))go('product',h);else if(['home','library','activity'].includes(h))go(h);else go('home')}
+window.addEventListener('hashchange',fromHash);fromHash();
+</script>
+</body>
+</html>
