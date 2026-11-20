@@ -435,6 +435,9 @@ activities:[
  {type:'출장',p:'mv50',c:'페루',date:'2026-09-20',title:'EsSalud A/S 교육',desc:'엔지니어 6명',res:'재구매 입찰 확정'}
 ]};
 
+/* ===== Google 연결 설정 ===== */
+const CONFIG={API_URL:'https://script.google.com/a/macros/mekics.com/s/AKfycbxRDN_CAD0KHfEWiQeBpgGCV0HKFtTtD9xtgjAbP1CbqkLJcGLwmu4IMvhwo7p9w1Lo/exec', /* Apps Script 웹 앱 URL */ KEY_STORAGE:'mekics_hub_key'};
+let LIVE=false, META={};
 /* ===== helpers ===== */
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>n.toLocaleString('ko-KR');
@@ -443,7 +446,7 @@ const rc=r=>r>=90?'#16a34a':r>=60?'#3973f6':'#e0475b';
 const P=id=>DATA.products.find(p=>p.id===id);
 const inScope=s=>cur.scope==='전체'||(cur.scope==='국내')===!!s.dom;
 const SC=()=>DATA.strategy.filter(inScope);
-const fileCol={PDF:'#e0475b',XLS:'#16a34a',PPT:'#d97706',MP4:'#8069e8',DOC:'#3973f6'};
+const fileCol={PDF:'#e0475b',XLS:'#16a34a',PPT:'#d97706',MP4:'#8069e8',DOC:'#3973f6',IMG:'#0ea5e9',ZIP:'#64748b',AI:'#f97316'};
 const typeIcon={출장:'✈️',학회:'🎪',보고:'📊',자료:'📁'},typePill={출장:'p-blue',학회:'p-purple',보고:'p-amber',자료:'p-green'};
 const STAGES=[['론칭 준비','사양 → 시장평가'],['개량','특장점 재발굴 · 업그레이드'],['확산','성공사례 · 교육 · 포지셔닝']];
 const CAT={'ST':['전략 · 마케팅 포인트','🎯'],'04':['카다로그','📘'],'01':['스펙시트','📐'],'06':['PPT','📊'],'05':['리플렛 · 배너','🪧'],'07':['임상 데이터','🧪'],'19':['임상 논문','📚'],'18':['데모 Reference','🎬'],'09':['경쟁사 자료','⚔️'],'10':['제품 영상','🎞'],'08':['제품 사진','🖼'],'02':['사용자 매뉴얼','📗'],'03':['서비스 매뉴얼','🛠'],'00':['허가증','📜']};
@@ -506,7 +509,7 @@ function renderProduct(){
   </div>
 
   <div class="sec-title"><span class="no">A</span><h3>국가별 전략 오버뷰</h3><span class="sub">시장환경 → 목표 수립 → 성과표 · 행을 누르면 상세</span>
-   <div class="right"><span class="gsrc"><i></i>Google Sheets · Strategy 탭</span><button class="btn sm" onclick="toast('연결 후 원본 Google 시트가 열립니다')">시트에서 편집 ↗</button></div></div>
+   <div class="right"><span class="gsrc"><i></i>Google Sheets · Strategy 탭</span>${META.sheetUrl?`<a class="btn sm" style="text-decoration:none" href="${META.sheetUrl}" target="_blank" rel="noopener">시트에서 편집 ↗</a>`:`<button class="btn sm" onclick="toast('Google 시트 연결 후 사용 가능')">시트에서 편집 ↗</button>`}</div></div>
   <div class="sheet-wrap"><table class="sheet"><thead>
    <tr><th rowspan="2"><span class="grp" style="background:#192238">국가</span><span class="col">국가/권역 · 담당</span></th>
     <th colspan="4"><span class="grp g-a">① 시장환경</span></th><th colspan="2"><span class="grp g-a">② 플레이어 · 시장구분</span></th>
@@ -532,9 +535,9 @@ function renderProduct(){
 function addTips(){$$('.clamp,.lc-step small,.p-title .model,.mat .info small,.u .info small').forEach(e=>{if(!e.title)e.title=e.textContent.trim()})}
 function renderMats(){
   const p=P(cur.p),mats=DATA.materials.filter(m=>m.p===cur.p),sub=p.sub||{};
-  const keys=CAT_ORDER.filter(k=>sub[k]||mats.some(m=>m.cat===k));
+  const keys=[...CAT_ORDER,...Object.keys(CAT).filter(k=>!CAT_ORDER.includes(k)).sort()].filter(k=>sub[k]||mats.some(m=>m.cat===k));
   $('#matCats').innerHTML=`<button class="chip ${cur.cat==='전체'?'active':''}" onclick="cur.cat='전체';renderMats()">전체</button>`+keys.map(k=>{const n=mats.filter(m=>m.cat===k).length;return`<button class="chip ${k===cur.cat?'active':''}" onclick="cur.cat='${k}';renderMats()">${CAT[k][1]} ${CAT[k][0]}${n?` <span class="num" style="opacity:.6">${n}</span>`:''}</button>`}).join('');
-  const show=mats.filter(m=>cur.cat==='전체'||m.cat===cur.cat);
+  const show=cur.cat==='전체'?[...mats].sort((a,b)=>String(b.ver).localeCompare(String(a.ver))).slice(0,12):mats.filter(m=>m.cat===cur.cat);
   const folders=(cur.cat==='전체'?keys:[cur.cat]).filter(k=>sub[k]);
   $('#matGrid').innerHTML=(show.length?show.map(matCard).join(''):'')+
    folders.map(k=>`<a class="mat" href="${fUrl(sub[k])}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;background:rgba(255,255,255,.45);border-style:dashed"><div class="di" style="background:linear-gradient(145deg,#6c7cf5,#8b6cf0);font-size:18px">${CAT[k][1]}</div><div class="info"><b>${CAT[k][0]} 폴더</b><small>Google Drive · ${p.name} / ${k} ${CAT[k][0]}</small></div><span class="dl-btn">폴더 ↗</span></a>`).join('')+
@@ -575,13 +578,59 @@ function renderActivity(){
 function openDrawer(h){$('#drawerBody').innerHTML=h;$('#drawer').classList.add('open');$('#overlay').classList.add('open')}
 function closeDrawer(){$('#drawer').classList.remove('open');$('#overlay').classList.remove('open')}
 $('#drawerX').onclick=closeDrawer;$('#overlay').onclick=closeDrawer;document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
-$('#prodNav').innerHTML=GRPS.map(g=>`<div style="font-size:10.5px;color:var(--muted);font-weight:700;padding:8px 12px 2px">${g}</div>`+DATA.products.filter(p=>p.grp===g).map(p=>{const n=DATA.strategy.filter(s=>s.p===p.id).length;return`<button class="nav-item" data-view="product" data-p="${p.id}" style="padding:7px 12px"><span class="pi">${p.icon}</span>${p.name}${n?`<span class="tag">${n}개국</span>`:''}</button>`}).join('')).join('');
+function renderNav(){$('#prodNav').innerHTML=GRPS.map(g=>`<div style="font-size:10.5px;color:var(--muted);font-weight:700;padding:8px 12px 2px">${g}</div>`+DATA.products.filter(p=>p.grp===g).map(p=>{const n=DATA.strategy.filter(s=>s.p===p.id).length;return`<button class="nav-item" data-view="product" data-p="${p.id}" style="padding:7px 12px"><span class="pi">${p.icon}</span>${p.name}${n?`<span class="tag">${n}개국</span>`:''}</button>`}).join('')).join('');}
+renderNav();
 $('.sidebar').style.overflowY='auto';
 $('#gSearch').addEventListener('input',()=>{if(cur.view!=='library')go('library');else renderLibrary()});
 function renderScope(){$('#scopeSeg').innerHTML=['전체','국내','해외'].map(x=>`<button onclick="cur.scope='${x}';renderScope();go(cur.view)" style="border:0;padding:6px 13px;border-radius:9px;font-weight:700;font-size:12.5px;background:${cur.scope===x?'#192238':'transparent'};color:${cur.scope===x?'#fff':'#5a6479'}">${x==='국내'?'🇰🇷 ':x==='해외'?'🌐 ':''}${x}</button>`).join('')}
 renderScope();
+/* ===== 시트 · 드라이브 데이터 적용 ===== */
+const CAT_ICON={'00':'📜','01':'📐','02':'📗','03':'🛠','04':'📘','05':'🪧','06':'📊','07':'🧪','08':'🖼','09':'⚔️','10':'🎞','15':'🗃','16':'🏠','17':'🔧','18':'🎬','19':'📚','__':'📁'};
+function ftype(name,mime){const n=String(name).toLowerCase(),m=String(mime);
+  if(/\.pdf$/.test(n)||m.includes('pdf'))return'PDF';if(/\.pptx?$/.test(n)||m.includes('presentation'))return'PPT';if(/\.xlsx?$|\.csv$/.test(n)||m.includes('spreadsheet'))return'XLS';
+  if(/\.(mp4|mov|avi)$/.test(n)||m.startsWith('video'))return'MP4';if(/\.(jpe?g|png|gif|tif|psd)$/.test(n)||m.startsWith('image'))return'IMG';if(/\.(zip|rar|7z)$/.test(n))return'ZIP';if(/\.ai$/.test(n))return'AI';return'DOC'}
+function applyLive(d){
+  const st=DATA.materials.filter(m=>m.cat==='ST');
+  DATA.products=d.Products.filter(p=>String(p.active).toUpperCase()!=='FALSE').sort((a,b)=>(+a.order||99)-(+b.order||99)).map(p=>({id:String(p.id),grp:p.group||'기타',name:p.name,model:p.model||'',icon:p.icon||'📦',stage:+p.stage||1,folder:p.driveFolderId,position:p.position||'',usp:String(p.usp||'').split('|').map(x=>x.trim()).filter(Boolean),sub:{}}));
+  [...new Set(DATA.products.map(p=>p.grp))].forEach(g=>{if(!GRPS.includes(g))GRPS.push(g)});
+  const mats=[];
+  (d.driveIndex||[]).forEach(r=>{const p=DATA.products.find(x=>x.id===String(r.product));if(!p)return;const code=String(r.folderCode).padStart(2,'0');
+    if(!CAT[code])CAT[code]=[code==='__'?'제품 폴더':String(r.folderName).replace(/^\d+\s*/,''),CAT_ICON[code]||'📁'];
+    if(r.mimeType==='folder'){p.sub[code]=r.folderId;return}
+    if(r.fileId)mats.push({p:p.id,cat:code,name:String(r.fileName).replace(/\.[^.]+$/,''),type:ftype(r.fileName,r.mimeType),id:r.fileId,ver:r.updated||''})});
+  DATA.materials=[...mats,...st.filter(m=>DATA.products.some(p=>p.id===m.p))];
+  const demoCount=(p,reg)=>(d.Demos||[]).filter(x=>String(x.product)===p&&String(x.region)===reg).length;
+  DATA.strategy=d.Strategy.filter(r=>r.product).map(r=>({p:String(r.product),dom:String(r.scope).includes('국내'),c:r.region,flag:r.flag||(String(r.scope).includes('국내')?'🇰🇷':'🌐'),stage:+r.stage||1,owner:r.owner||'',
+    env:{bid:r.bid||'',ins:r.insurance||'',buy:r.purchase||'',pay:r.payment||''},seg:r.segment||'',player:r.players||'',pos:r.positioning||'',goals:[r.goal1||'-',r.goal2||'-',r.goal3||'-'],approach:r.approach||'',
+    target:+r.target||0,actual:+r.actual||0,demo:demoCount(String(r.product),r.region),lead:+r.lead||0,win:+r.winRate||(+r.quote?Math.round((+r.won||0)/(+r.quote)*100):0),updated:String(r.updatedAt||'').slice(5).replace('-','/'),sample:String(r.memo).includes('샘플')}));
+  const comp={};(d.Competitors||[]).forEach(r=>{const p=String(r.product);comp[p]=comp[p]||{items:{},cols:{}};comp[p].items[r.item]=+r.itemOrder||99;
+    const c=comp[p].cols[r.competitor]=comp[p].cols[r.competitor]||{n:r.competitor,us:String(r.isUs).toUpperCase()==='TRUE',o:+r.colOrder||99,v:{}};c.v[r.item]=r.value});
+  DATA.competitors={};for(const p in comp){const rows=Object.keys(comp[p].items).sort((a,b)=>comp[p].items[a]-comp[p].items[b]);DATA.competitors[p]={rows,cols:Object.values(comp[p].cols).sort((a,b)=>a.o-b.o).map(c=>({n:c.n,us:c.us,v:rows.map(r=>c.v[r]??'-')}))}}
+  DATA.activities=(d.Activities||[]).filter(a=>a.title).map(a=>({type:a.type||'자료',p:String(a.product||''),c:a.region||'',date:String(a.date),title:a.title,desc:a.desc||'',res:a.result||'',up:String(a.status).includes('예정')}));
+  META={sheetUrl:d.sheetUrl,indexUpdated:d.indexUpdated,hasSample:DATA.strategy.some(s=>s.sample)};LIVE=true;
+}
+function jsonp(url){return new Promise((res,rej)=>{const cb='__hub'+Date.now();const sc=document.createElement('script');const t=setTimeout(()=>{cleanup();rej(new Error('응답 시간 초과'))},30000);
+  function cleanup(){clearTimeout(t);delete window[cb];sc.remove()}window[cb]=d=>{cleanup();res(d)};sc.onerror=()=>{cleanup();rej(new Error('서버 연결 실패'))};sc.src=url+(url.includes('?')?'&':'?')+'callback='+cb;document.body.appendChild(sc)})}
+function getKey(){try{return localStorage.getItem(CONFIG.KEY_STORAGE)||''}catch(e){return''}}
+function setKey(k){try{localStorage.setItem(CONFIG.KEY_STORAGE,k)}catch(e){}}
+function showGate(msg){openDrawer(`<h2>🔐 접속 코드</h2><div class="muted">MEKICS Sales Strategy Hub는 사내 전용입니다.<br>전략기획팀에서 받은 접속 코드를 입력해 주세요.</div>
+  <form class="form" id="gateForm"><label>접속 코드<input name="k" inputmode="numeric" autocomplete="off" required></label>${msg?`<div class="pill p-red" style="justify-self:start">${msg}</div>`:''}<button class="btn primary">입장</button></form>`);
+  $('#drawerX').style.display='none';$('#overlay').onclick=null;
+  $('#gateForm').onsubmit=e=>{e.preventDefault();const k=new FormData(e.target).get('k').trim();setKey(k);closeDrawer();$('#drawerX').style.display='';$('#overlay').onclick=closeDrawer;loadLive()}}
+async function loadLive(){
+  if(!CONFIG.API_URL)return;
+  const k=getKey();if(!k){showGate();return}
+  $('.sample').textContent='불러오는 중…';
+  try{const d=await jsonp(CONFIG.API_URL+'?action=data&key='+encodeURIComponent(k));
+    if(!d.ok){if(/접속 코드/.test(d.error)){setKey('');showGate('접속 코드가 맞지 않아요')}else toast(d.error);$('.sample').textContent='연결 오류';return}
+    applyLive(d);renderNav();
+    const sp=$('.sample');sp.textContent=META.hasSample?'Google 연결 · 샘플 포함':'Google 연결됨';sp.style.background=META.hasSample?'':'var(--green-soft)';sp.style.color=META.hasSample?'':'var(--green)';
+    sp.title='드라이브 목록 갱신: '+(META.indexUpdated||'-');go(cur.view==='product'&&!P(cur.p)?'home':cur.view);
+  }catch(e){toast(e.message+' · 샘플 데이터로 표시');$('.sample').textContent='오프라인 · 샘플'}
+}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-sheet]');if(a&&META.sheetUrl){e.preventDefault();window.open(META.sheetUrl,'_blank')}});
 function fromHash(){const h=(location.hash||'').slice(1);if(P(h))go('product',h);else if(['home','library','activity'].includes(h))go(h);else go('home')}
-window.addEventListener('hashchange',fromHash);fromHash();
+window.addEventListener('hashchange',fromHash);fromHash();loadLive();
 </script>
 </body>
 </html>
